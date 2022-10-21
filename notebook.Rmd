@@ -1,0 +1,585 @@
+---
+title: "Introducción práctica a la ciencia de datos en R"
+author: "Wenceslao Arroyo-Machado<br><a href='https://twitter.com/Wences91' style='font-size: 14px'>@Wences91</b>"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    css: style.css
+    theme: journal
+    highlight: zenburn
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Esta es una [R Markdown](http://rmarkdown.rstudio.com) Notebook[^1] con todos los contenidos del curso [Introducción práctica a la ciencia de datos en R](https://yosigopublicando.ugr.es/courses/introduccion-practica-a-la-ciencia-de-datos-en-r/). El objetivo es introducir los procesos básicos de ciencia de datos para el procesamiento de datos (lectura, procesamiento y exportación).
+
+[^1]: Una notebook combina un script de programación con editor de texto. Facilita la documentación del código y su lectura.
+
+# Preparación
+
+## Paquetes
+
+Vamos a hacer uso de dos paquetes de R: `data.table()` y `dplyr()`. Puedes importarlos a la sesión mediante la función `library()`.
+
+```{r library_datatable_dplyr, warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+```
+
+En caso de que no tengas alguno de los paquetes puedes instalarlos rápidamente con `install.packages()` y tras ello importarlos usando la función `library()`.
+
+```{r install_datatable_dplyr, eval=FALSE}
+install.packages('data.table')
+install.packages('dplyr')
+```
+
+## Datos
+
+Para esta sesión vamos a usar un subconjunto de datos de [IMDB](https://www.imdb.com/interfaces/). Se han recuperado varios datasets y filtrado previamente a películas, cortos y videojuegos de los años 90. Los datos están disponibles en el directorio *data*.
+
+En concreto vamos a usar tres datasets:
+
+-   **title_basics.tsv** (96026 x 8) - dataset principal con los datos básicos de las obras
+
+    -   *tconst* - id de la obra
+
+    -   *titleType* - tipo de obra
+
+    -   *primaryTitle* - título principal
+
+    -   *originalTitle* - título original
+
+    -   *isAdult* - contenido adulto
+
+    -   *startYear* - año
+
+    -   *runtimeMinutes* - duración
+
+    -   *genres* - género/s
+
+<!-- -->
+
+-   **title_ratings.tsv** (44028 x 3) - puntuaciones promedio
+
+    -   *tconst* - id de la obra
+
+    -   *averageRating* - puntuación promedio
+
+    -   *numVotes*- número de votos
+
+<!-- -->
+
+-   **title_akas.tsv** (371351 x 8) - traducciones de los títulos
+
+    -   *titleId* - id de la obra
+
+    -   *ordering* - orden
+
+    -   *title* - título
+
+    -   *region* - región del título
+
+    -   *language* - idioma
+
+    -   *types* - atributos
+
+    -   *attributes* - términos adicionales
+
+    -   *isOriginalTitle* - título original
+
+# Lectura de datos
+
+Antes de importar los datos a RStudio o cualquier otra herramienta es necesario revisar los ficheros manualmente para conocer su estructura y características. Los formatos estándar son en texto plano delimitado por comas o punto y coma (*.csv*) y tabulador (*.tsv*). Es fundamental saber:
+
+-   **Codificación** - juego de caracteres, generalmente usarás UTF-8.
+-   **Delimitador** - caracter de separación, lo normal es la coma (,), punto y coma (;) y tabulador (\\t).
+-   **Calificador** - caracter que evita que en cadenas de texto donde esta presente un caracter igual al delimitador no lo reconozca como tal, lo normal son las comillas dobles (") o comillas simples (').
+-   **Caractereres nulos** - cadenas de caracteres que reconocer como valores nulos.
+
+Estos son las opciones que más problemas te pueden dar. Sin embargo existen otras como el caracter usado para los decimales, el uso o no de cabecera...
+
+## read.table()
+
+Existe una función base que permite importar archivos en texto plano. La función es `read.table()`. Tanto esta como otras funciones vienen con parámetros por defecto, usa `?read.table()` para conocerlos. En este caso verás que muchos vienen desactivados.
+
+**Ejemplo:** Vamos a importar el archivo con la información básica de películas.
+
+```{r lectura_readtable}
+df <- read.table(file = 'data/title_basics.tsv',
+                 header = TRUE, # mi archivo tiene cabecera
+                 sep = '\t', # el delimitador es el tabulador
+                 quote = '', # no tengo cualificadores
+                 na.strings = 'null', # caracteres nulos
+                 comment.char = '', # no tengo comentarios
+                 encoding = 'UTF-8') # codificación
+```
+
+Desde el IDE de RStudio puedes comprobar cómo se han importado los datos e incluso visualizarlos. Podemos usar para ello `summary()` para obtener un resumen de las variables/instancias y `head()`. para visualizar las primeras líneas del *data.frame*. Los datos son importados como *data.frame*, el cual puede ser visto como una tabla o una hoja de cálculo. Los *data.frame* cuentan con diferentes variables o columnas, pudiendo ser cada una de un tipo (texto,, número, booleano...) y existen diferentes instancias o filas.
+
+```{r comprobacion_lectura_readtable}
+summary(df)
+head(df)
+```
+
+Existen diferente variantes de `read.table()` que tomando está como base incluyen algunos parámetros concretos para importar determinados archivos de forma ágil. Estas son:
+
+-   `read.csv()` - archivos separados por comas y con puntos por decimales.
+-   `read.csv2()` - archivos separados por comas y con comas por decimales.
+-   `read.delim()` - archivos separados por tabuladores y con puntos por decimales.
+-   `read.delim2()` - archivos separados por tabuladores y con comas por decimales.
+
+**Ejemplo:** El archivo anterior se puede importar directamente con `read.delim()`.
+
+```{r lectura_readdelim}
+df <- read.delim(file = 'data/title_basics.tsv',
+                 quote = '', # no tengo cualificadores
+                 na.strings = 'null', # caracteres nulos
+                 encoding = 'UTF-8') # codificación
+```
+
+Como está enmascarando la función `read.table()` podemos usar los mismos argumentos que esta admite.
+
+Otro elemento a considerar en la importación de los datos es el tipo de dato. Este formato es asignado por defecto pero puede que en ocasiones queramos cambiarlo. Podemos hacerlo desde la propia importación de datos usando el argumento *colClasses*, indicando la variable y su tipo.
+
+**Ejemplo:** Importar el archivo anterior pero con la columnas de años como texto en lugar de números.
+
+```{r lectura_readdelim_character}
+df <- read.delim(file = 'data/title_basics.tsv',
+                 quote = '', # no tengo cualificadores
+                 na.strings = 'null', # caracteres nulos
+                 encoding = 'UTF-8', # codificación
+                 colClasses = c('startYear'='character')) # forzamos que los años sean texto
+```
+
+En línea con ello, también podemos hacer que las variables de tipo texto sean reconocidas como factores con el argumento *stringsAsFactors*. Esta opción hasta hace unos años venía activada por defecto.
+
+**Ejemplo:** Importar el archivo anterior pero con las variables de texto como factores.
+
+```{r lectura_readdelim_factor}
+df <- read.delim(file = 'data/title_basics.tsv',
+                 quote = '', # no tengo cualificadores
+                 na.strings = 'null', # caracteres nulos
+                 encoding = 'UTF-8', # codificación
+                 stringsAsFactors = TRUE) # texto como factores
+```
+
+## fread()
+
+Existen funciones en otros paquetes que facilitan aún más este trabajo, como es el caso de `fread()` del paquete `dplyr`. Esta función es más rápida y directamente reconoce el delimitador, aunque es recomendable curarse en salud e indicarlo. A grandes rasgos, los argumentos de `read.table()` también están presentes aquí, por lo que es muy fácil trabajar con esta función.
+
+**Ejemplo:** Importar el archivo anterior con la información básica de películas con `fread()`.
+
+```{r lectura_fread}
+df <- fread(file = 'data/title_basics.tsv',
+            quote = '', # no tengo cualificadores
+            na.strings = 'null', # caracteres nulos
+            encoding = 'UTF-8') # codificación
+```
+
+Sin embargo, hay un aspecto a tener en cuenta. Esta función por defecto importa los datos como tipo *data.table* en lugar de *data.frame*. Este formato es más ágil y avanzado, pero puedes hacer que se importe como *data.frame* con el argumento *data.table*. En nuestro caso trabajaremos con *data.frame* por ser un curso introductorio.
+
+```{r lectura_fread_dataframe}
+df <- fread(file = 'data/title_basics.tsv',
+            quote = '', # no tengo cualificadores
+            na.strings = 'null', # caracteres nulos
+            encoding = 'UTF-8', # codificación
+            data.table = FALSE) # data.table o data.frame
+```
+
+# Jugando con los datos
+
+Una vez importados los datos podemos realizar diferentes procesos con ellos para filtrarlos, combinarlos... A lo largo de esta sección trabajaremos con las opciones base de R así como con el paquete `dplyr`.
+
+## Consideraciones previas
+
+-   Lo habitual al realizar alguna manipulación de datos es almacenar el *data.frame* resultante en una nueva variable o sustituir la actual. Si no estás muy segura/o del resultado de la operación o crees que más adelante tendrás que volver al conjunto original crea una variable nueva.
+
+-   En el caso de `dplyr`, es posible realizar varias operaciones consecutivas de forma ágil. Este paquete habilita el operador pipe (%\>%) que facilita este proceso. Más adelante veremos su funcionamiento.
+
+## Ordenar filas
+
+Una primera operación sencilla y básica es ordenar filas en base a los valores de una columna. La forma básica es a través de la función `order()`. indicando la columna y con el argumento *decreasing* si queremos ordenar de manera ascendente o descendente. Si no lo indicamos por defecto lo hace ascendente.
+
+**Ejemplo:** Ordenar el *data.frame* por *startYear* en orden descendente.
+
+```{r order_base}
+df_filtrado <- df[order(df$startYear, decreasing = TRUE),]
+head(df_filtrado)
+```
+
+En el caso de `dplyr` podemos hacerlo con la función `arrange()`. En este caso si a continuación incluimos el nombre de la variable ordenamos de manera ascendente, pero si queremos de forma descendente tenemos incluir la variable dentro de la función `desc()`. Fíjate que las variables se indican directamente sin nada más, ni siquiera comillas, esto es algo que se va a repetir en este paquete.
+
+**Ejemplo:** Ordenar el *data.frame* por *startYear* en orden descendente con `dplyr`.
+
+```{r order_dplyr}
+df_filtrado <- arrange(df, desc(startYear))
+head(df_filtrado)
+```
+
+## Selección de columnas
+
+La selección de columnas puede hacerse indicando directamente el nombre de la/s columna/s que queremos seleccionar o el índice de su posición en el *data.frame*. Es útil además para cambiar el orden de las columnas.
+
+**Ejemplo:** Seleccionar las variables *primaryTitle* y *titleType* (en este orden).
+
+```{r select_columnas_base}
+df_filtrado <- df[,c('primaryTitle', 'titleType')]
+df_filtrado <- df[,c(3,2)] # igual que el anterior pero con el índice
+head(df_filtrado)
+```
+
+En el caso de `dplyr` podemos hacerlo con la función `select()`, indicando primero el *data.frame* a filtrar y tras ello el nombre de las diferentes variables.
+
+**Ejemplo:** Seleccionar las variables *primaryTitle* y *titleType* (en este orden) con `dplyr`.
+
+```{r select_columnas_dplyr}
+df_filtrado <- select(df, primaryTitle, titleType)
+head(df_filtrado)
+```
+
+## Selección de casos
+
+### Posición
+
+La selección de casos puede hacerse indicando directamente el nombre de la/s fila/s (si lo tiene) o, lo más habitual, el índice de su posición en el *data.frame*.
+
+**Ejemplo:** Seleccionar las filas de la posición 100 a la 200.
+
+```{r select_filas_base}
+df_filtrado <- df[c(100:200),]
+head(df_filtrado)
+```
+
+En el caso de `dplyr` podemos hacerlo con la función `slice()`, indicando primero el *data.frame* y después la posición.
+
+**Ejemplo:** Seleccionar las filas de la posición 100 a la 200 con `dplyr`.
+
+```{r select_filas_dplyr}
+df_filtrado <- slice(df, 100:200)
+head(df_filtrado)
+```
+
+### Filtrar (lógico)
+
+Es posible en ambos casos hacer la selección filtrando mediante criterios. De base puede hacerse con la función `which()` estableciendo criterios lógicos.
+
+Operadores lógicos comunes:
+
+-   **\<** - menor que
+
+-   \> - mayor que
+
+-   \>= - mayor o igual que
+
+-   \<= - menor o igual que
+
+-   ! - negación
+
+-   == - exactamente
+
+-   != - distinto
+
+-   %in% - pertenece a un grupo
+
+**Ejemplo:** Seleccionar las filas con un valor de *startYear* mayor a 1995.
+
+```{r filtrar_filas_mayor_base}
+df_filtrado <- df[which(df$startYear > 1995),]
+head(df_filtrado)
+```
+
+**Ejemplo:** Seleccionar las filas con un valor de *startYear* entre 1995 y 1997.
+
+```{r filtrar_filas_entre_base}
+df_filtrado <- df[which(df$startYear %in% c(1995:1997)),]
+head(df_filtrado)
+```
+
+En el caso de `dplyr` podemos hacerlo con la función `filter()`, indicando primero el *data.frame* y luego el criterio.
+
+**Ejemplo:** Seleccionar las filas con un valor de *startYear* mayor a 1995 con `dplyr`.
+
+```{r filtrar_filas_mayor_dplyr}
+df_filtrado <- filter(df, startYear > 1995)
+head(df_filtrado)
+```
+
+**Ejemplo:** Seleccionar las filas con un valor de *startYear* entre 1995 y 1997 con `dplyr`.
+
+```{r filtrar_filas_entre_dplyr}
+df_filtrado <- filter(df, startYear %in% c(1995:1997))
+head(df_filtrado)
+```
+
+Asimismo, podemos combinar diferentes criterios con los operadores lógicos AND y OR. De base puede usarse AND con & y OR con \|.
+
+**Ejemplo:** Seleccionar las filas con un valor de *startYear* mayor a 1995 y con *titleTyple* movie.
+
+```{r filtrar_filas_mayor_combinado_base}
+df_filtrado <- df[which(df$startYear > 1995 & df$titleType == 'movie'),]
+head(df_filtrado)
+```
+
+En `dplyr` podemos hacer uso de AND con & o separando los criterios con comas y de OR usando directamente \|.
+
+**Ejemplo:** Seleccionar las filas con un valor de *startYear* mayor a 1995 y con *titleTyple* movie con `dplyr`.
+
+```{r filtrar_filas_mayor_combinado_dplyr}
+df_filtrado <- filter(df, startYear > 1995, titleType == 'movie')
+head(df_filtrado)
+```
+
+Un tipo de filtrado de mucha utilidad es a partir de valores nulos, para eliminar aquellas instancias que contienen en una o varias columnas valores nulos. Para ello, podemos usar la función `is.na()` junto al operador *!*.
+
+**Ejemplo:** Seleccionar las filas que no tienen valores nulos en *genres*.
+
+```{r filtrar_nulos}
+df_filtrado <- df[which(!is.na(df$genres)),]
+head(df_filtrado)
+```
+
+**Ejemplo:** Seleccionar las filas que no tienen valores nulos en *genres* con `dplyr`.
+
+```{r filtrar_nulos_dplyr}
+df_filtrado <- filter(df, !is.na(genres))
+head(df_filtrado)
+```
+
+### Filtrar (coincidencia de texto)
+
+Es posible seleccionar aquellas filas que contienen alguna coincidencia con un texto y no solo aquellas con las que coincide el texto completo.
+
+De base se puede hacer con la función `grepl()`. Esta función sirve para identificar aquellas instancias que cumplen un determinado patrón.
+
+**Ejemplo:** Seleccionar las filas que contengan en *genres* Drama, sin importar si salen más géneros.
+
+```{r filtrar_filas_coincidencia_base}
+df_filtrado <- df[grepl('Drama', df$genres),]
+head(df_filtrado)
+```
+
+En lo referido a `dplyr`, podemos usar también la función `grepl()` a través de `filter()`.
+
+**Ejemplo:** Seleccionar las filas que contengan en *genres* Drama, sin importar si salen más géneros con `dplyr`.
+
+```{r filtrar_filas_coincidencia_dplyr}
+df_filtrado <- filter(df, grepl('Drama', genres))
+head(df_filtrado)
+```
+
+Una opción interesante y que permite `grepl()` es el uso de expresiones regulares.
+
+**Ejemplo:** Seleccionar las filas que contengan en *primaryTitle* un número.
+
+```{r filtrar_filas_coincidencia_regex_base}
+df_filtrado <- df[grepl('[0-9]', df$primaryTitle),]
+head(df_filtrado)
+```
+
+**Ejemplo:** Seleccionar las filas que contengan en *primaryTitle* un número con `dplyr`.
+
+```{r filtrar_filas_coincidencia_pregex_dlyr}
+df_filtrado <- filter(df, grepl('[0-9]', primaryTitle))
+head(df_filtrado)
+```
+
+## Concatenación de operaciones
+
+Podemos realizar simultáneamente una selección de variables y casos. La opción básica no requiere de mayores explicaciones.
+
+**Ejemplo:** Seleccionar las filas que contengan en *genres* Comedy y las columnas *primaryTitle* y *startYear*.
+
+```{r filtrar_filas_combinado_base}
+df_filtrado <- df[grepl('Comedy', df$genres), c('primaryTitle', 'startYear')]
+head(df_filtrado)
+```
+
+Sin embargo, como ya adelantamos, para concatenar operaciones en `dplyr` tenemos el operador pipe (%\>%). Un aspecto importante en su uso es que en primer lugar indicamos el *data.frame* y tras ello vamos encadenando funciones sin indicar en estas la variable.
+
+**Ejemplo:** Seleccionar las filas que contengan en *genres* Comedy y las columnas *primaryTitle* y *startYear* con `dplyr`.
+
+```{r filtrar_filas_combinado_dlyr}
+df_filtrado <- df %>%
+  filter(grepl('Comedy', genres)) %>%
+  select(primaryTitle, startYear)
+head(df_filtrado)
+```
+
+## Cruzando *data.frames*
+
+Esta es una de las operaciones clave y que en R se puede llevar a cabo de manera muy rápida y sencilla. Al cruzar diferentes datasets tenemos cuatro opciones básicas:
+
+-   **Inner** - Se mantienen las instancias comunes, combinándose las variables de ambos datasets.
+
+-   **Left** - Se mantienen las instancias comunes y todas las demás del dataset que se mantiene a la izquierda, combinándose las variables de ambos datasets. En el caso de las instancias no comunes, los valores de las variables nuevas aparecen como nulos.
+
+-   **Right** - Se mantienen las instancias comunes y todas las demás del dataset que se mantiene a la derecha, combinándose las variables de ambos datasets. En el caso de las instancias no comunes, los valores de las variables nuevas aparecen como nulos.
+
+-   **Full** - Se mantienen las instancias comunes y todas las demás, combinándose las variables de ambos datasets. En el caso de las instancias no comunes, los valores de las variables nuevas aparecen como nulos.
+
+<center>![Fuente: https://www.hostingplus.cl/blog/tipos-de-join-en-sql-cuales-son-los-principales/](images/joins.jpg){width="500"}</center>
+
+Para este caso vamos a importar un nuevo dataset para cruzarlo con el ya presente. Vamos a importar los datos de votaciones.
+
+```{r lectura_notas_readdelim}
+df_notas <- read.delim(file = 'data/title_ratings.tsv',
+                       quote = '', # no tengo cualificadores
+                       na.strings = 'null', # caracteres nulos
+                       encoding = 'UTF-8') # codificación
+
+df_akas <- read.delim(file = 'data/title_akas.tsv',
+                      quote = '', # no tengo cualificadores
+                      na.strings = 'null', # caracteres nulos
+                      encoding = 'UTF-8') # codificación
+```
+
+En lugar de usar la opción base de R vamos a optar directamente por el paquete `dplyr`, ya que está más optimizado al respecto. De este modo contamos con las funciones `inner_join()`, `left_join()`, `right_join()` y `full_join()`. En todos ellos la forma de trabajar es la misma, se indica el dataset de la izquierda, el de la derecha y la variable en común para cruzarlos.
+
+**Ejemplo:** Combinar los datos de películas con los datos de sus respectivas notas dejando solo las películas que tienen notas con `dplyr`.
+
+```{r inner_join_dplyr}
+df_filtrado <- inner_join(x=df, y=df_notas, by='tconst')
+head(df_filtrado)
+```
+
+**Ejemplo:** Combinar los datos de películas con los datos de sus respectivas notas dejando tanto las películas que tienen notas como las que no con `dplyr`.
+
+```{r left_join_dplyr}
+df_filtrado <- left_join(x=df, y=df_notas, by='tconst')
+df_filtrado <- full_join(x=df, y=df_notas, by='tconst') # no hay notas sin películas
+head(df_filtrado)
+```
+
+Puede darse el caso también de que la variable que utilizamos para hacer el join se llame de forma diferente en ambos datasets. Entre las alternativas posibles para sortear este contratiempo la más rápida pasa por indicarle esta asociación a la función de join que estemos usando.
+
+**Ejemplo:** Combinar los datos de películas con los datos de sus títulos en otros idiomas dejando solo las películas con títulos traducidos con `dplyr`.
+
+```{r inner_join_keys_dplyr}
+df_filtrado <- inner_join(x=df, y=df_akas, by=c('tconst'='titleId'))
+head(df_filtrado)
+```
+
+## Agrupando datos
+
+Otra de las operaciones más populares es la de agregar datos. Tomando una o varias columnas podemos agregar las variables asociadas a ellas y aplicar alguna operación a estos datos agregados (recuento, suma, promedio...). Nuevamente, vamos a centrarnos en la opción que ofrece `dplyr` a través de `group_by()`. No obstante, en este caso también necesitamos usar la función `summarise()`, pues con la primera indicamos cómo agrupamos y con esta última la operación realizada sobre el resto de variables.
+
+**Ejemplo:** Calcular el año de publicación (*startYear*) promedio de cada tipología (*titleType*) en `dplyr`.
+
+```{r groupby_type_year_mean_dplyr}
+df_filtrado <- df %>%
+  group_by(titleType) %>%
+  summarise(startYear_avg = mean(startYear))
+head(df_filtrado)
+```
+
+**Ejemplo:** Calcular el número de obras que se han publicado anualmente (*startYear*) por tipología (*titleType*) en `dplyr`.
+
+```{r groupby_type_year_count_dplyr, message=FALSE}
+df_filtrado <- df %>%
+  group_by(titleType, startYear) %>%
+  summarise(total = n())
+head(df_filtrado)
+```
+
+## Algunos casos prácticos
+
+A modo de ejercicios para poner a prueba lo aprendido hasta ahora y captar mejor el potencial de estas opciones, vamos a llevar a cabo diferentes casos prácticos. Todos ellos se van a realizar en `dplyr`.
+
+**Caso 1:** Obtener el listado con la película más votada de cada año.
+
+```{r case_1, message=FALSE}
+df_filtrado <- df %>%
+  inner_join(df_notas, by='tconst') %>%
+  filter(titleType == 'movie') %>%
+  group_by(startYear) %>%
+  filter(numVotes == max(numVotes)) %>%
+  select(startYear, primaryTitle, numVotes)
+df_filtrado
+```
+
+**Caso 2:** Obtener el listado de las 20 películas con mayor puntuación promedio, habiéndolas votado al menos 50000 usuarios, junto al género/s.
+
+```{r case_2, message=FALSE}
+df_filtrado <- df %>%
+  inner_join(df_notas, by='tconst') %>%
+  filter(titleType == 'movie' & numVotes >= 50000) %>%
+  arrange(desc(averageRating)) %>%
+  slice(1:20) %>%
+  select(primaryTitle, genres, averageRating)
+df_filtrado
+```
+
+**Caso 3:** El listado anterior pero con los títulos en Español.
+
+```{r case_3, message=FALSE}
+df_filtrado <- df %>%
+  inner_join(df_notas, by='tconst') %>%
+  filter(titleType == 'movie' & numVotes >= 50000) %>%
+  arrange(desc(averageRating)) %>%
+  slice(1:20) %>%
+  inner_join(df_akas, by=c('tconst'='titleId')) %>%
+  filter(region=='ES' & is.na(language) & is.na(attributes)) %>%
+  select(title, genres, averageRating)
+df_filtrado
+```
+
+**Caso 4:** Calcular el total anual de películas de comedia valoradas por un mínimo de 1000 personas, y su valoración y duración promedio.
+
+```{r case_4, message=FALSE}
+df_filtrado <- df %>%
+  inner_join(df_notas, by='tconst') %>%
+  filter(grepl('Comedy', genres) & titleType == 'movie' & numVotes >= 1000) %>%
+  group_by(startYear)  %>%
+  summarise(movies = n(), averageRating_avg = mean(averageRating), runtimeMinutes = mean(runtimeMinutes, na.rm=TRUE))
+df_filtrado
+```
+
+**Caso 5:** Obtener el listado de los 10 videojuegos publicados entre 1995 y 1997 con mayor puntuación promedio, habiéndolos votado al menos 5000 usuarios, junto al año.
+
+```{r case_5, message=FALSE}
+df_filtrado <- df %>%
+  inner_join(df_notas, by='tconst') %>%
+  filter(titleType == 'videoGame' & numVotes >= 5000) %>%
+  arrange(desc(averageRating)) %>%
+  slice(1:10) %>%
+  select(primaryTitle, startYear, averageRating)
+df_filtrado
+```
+
+# Exportar
+
+En última instancia, llega el turno de exportar los datos. Nuevamente contamos con la opción base y la ofrecida por el paquete `data.table`.
+
+De base tenemos la función `write.table()`, que es la general y exporta por defecto en formato separado por tabuladores, y sus versiones derivadas que los hacen en separado por comas `write.csv()` y `write.csv2()`. Se trata de un proceso muy parecido al de lectura, donde debemos dejar claro el formato del archivo para garantizar que este sea después utilizable.
+
+**Ejemplo:** Exportar el *data.frame* del último caso práctico separado por tabuladores.
+
+```{r export_tab_base}
+write.table(df_filtrado, # data.frame a exportar
+            'results/archivo_exportado.tsv', # ruta y nombre de archivo
+            quote = FALSE, # en este caso no quiero ya que no necesito
+            fileEncoding = 'UTF-8', # codificación
+            row.names = FALSE) # omito los nombres/indices de filas
+```
+
+**Ejemplo:** Exportar el *data.frame* del último caso práctico separado por comas.
+
+```{r export_comma_base}
+write.csv(df_filtrado, # data.frame a exportar
+          'results/archivo_exportado.csv', # ruta y nombre de archivo
+          fileEncoding = 'UTF-8', # codificación
+          row.names = FALSE) # omito los nombres/indices de filas
+```
+
+Con `data.table` el proceso se realiza con la función `fwrite()` y es igual de sencillo. Por defecto utiliza el cualificador cuando detecta que es necesario, y usa de separador las comas.
+
+```{r export_comma_fwrite}
+fwrite(df_filtrado, # data.frame a exportar
+       'results/archivo_exportado.csv') # ruta y nombre de archivo
+```
