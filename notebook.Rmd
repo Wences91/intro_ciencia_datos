@@ -17,7 +17,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Esta es una [R Markdown](http://rmarkdown.rstudio.com) Notebook[^1] con todos los contenidos del curso [Introducción práctica a la ciencia de datos en R](https://yosigopublicando.ugr.es/courses/introduccion-practica-a-la-ciencia-de-datos-en-r/). El objetivo es introducir los procesos básicos de ciencia de datos para el procesamiento de datos (lectura, procesamiento y exportación).
+Esta es una [R Markdown](http://rmarkdown.rstudio.com) Notebook[^1] con todos los contenidos del curso [Introducción práctica a la ciencia de datos en R](https://yosigopublicando.ugr.es/courses/introduccion-practica-a-la-ciencia-de-datos-en-r/) y su [repetición](https://yosigopublicando.ugr.es/courses/introduccion-practica-a-la-ciencia-de-datos-en-r-redux/). El objetivo es introducir los procesos básicos de ciencia de datos para el procesamiento de datos (lectura, procesamiento y exportación).
 
 [^1]: Una notebook combina un script de programación con editor de texto. Facilita la documentación del código y su lectura.
 
@@ -98,8 +98,8 @@ En concreto vamos a usar tres datasets:
 Antes de importar los datos a RStudio o cualquier otra herramienta es necesario revisar los ficheros manualmente para conocer su estructura y características. Los formatos estándar son en texto plano delimitado por comas o punto y coma (*.csv*) y tabulador (*.tsv*). Es fundamental saber:
 
 -   **Codificación** - juego de caracteres, generalmente usarás UTF-8.
--   **Delimitador** - caracter de separación, lo normal es la coma (,), punto y coma (;) y tabulador (\\t).
--   **Calificador** - caracter que evita que en cadenas de texto donde esta presente un caracter igual al delimitador no lo reconozca como tal, lo normal son las comillas dobles (") o comillas simples (').
+-   **Delimitador** - carácter de separación, lo normal es la coma (,), punto y coma (;) y tabulador (\\t).
+-   **Calificador** - carácter que evita que en cadenas de texto donde esta presente un caracter igual al delimitador no lo reconozca como tal, lo normal son las comillas dobles (") o comillas simples (').
 -   **Caractereres nulos** - cadenas de caracteres que reconocer como valores nulos.
 
 Estos son las opciones que más problemas te pueden dar. Sin embargo existen otras como el caracter usado para los decimales, el uso o no de cabecera...
@@ -114,7 +114,7 @@ Existe una función base que permite importar archivos en texto plano. La funci�
 df <- read.table(file = 'data/title_basics.tsv',
                  header = TRUE, # mi archivo tiene cabecera
                  sep = '\t', # el delimitador es el tabulador
-                 quote = '', # no tengo cualificadores
+                 quote = '', # no tengo calificadores
                  na.strings = 'null', # caracteres nulos
                  comment.char = '', # no tengo comentarios
                  encoding = 'UTF-8') # codificación
@@ -138,7 +138,7 @@ Existen diferente variantes de `read.table()` que tomando está como base incluy
 
 ```{r lectura_readdelim}
 df <- read.delim(file = 'data/title_basics.tsv',
-                 quote = '', # no tengo cualificadores
+                 quote = '', # no tengo calificadores
                  na.strings = 'null', # caracteres nulos
                  encoding = 'UTF-8') # codificación
 ```
@@ -151,7 +151,7 @@ Otro elemento a considerar en la importación de los datos es el tipo de dato. E
 
 ```{r lectura_readdelim_character}
 df <- read.delim(file = 'data/title_basics.tsv',
-                 quote = '', # no tengo cualificadores
+                 quote = '', # no tengo calificadores
                  na.strings = 'null', # caracteres nulos
                  encoding = 'UTF-8', # codificación
                  colClasses = c('startYear'='character')) # forzamos que los años sean texto
@@ -163,7 +163,7 @@ En línea con ello, también podemos hacer que las variables de tipo texto sean 
 
 ```{r lectura_readdelim_factor}
 df <- read.delim(file = 'data/title_basics.tsv',
-                 quote = '', # no tengo cualificadores
+                 quote = '', # no tengo calificadores
                  na.strings = 'null', # caracteres nulos
                  encoding = 'UTF-8', # codificación
                  stringsAsFactors = TRUE) # texto como factores
@@ -171,13 +171,13 @@ df <- read.delim(file = 'data/title_basics.tsv',
 
 ## fread()
 
-Existen funciones en otros paquetes que facilitan aún más este trabajo, como es el caso de `fread()` del paquete `dplyr`. Esta función es más rápida y directamente reconoce el delimitador, aunque es recomendable curarse en salud e indicarlo. A grandes rasgos, los argumentos de `read.table()` también están presentes aquí, por lo que es muy fácil trabajar con esta función.
+Existen funciones en otros paquetes que facilitan aún más este trabajo, como es el caso de `fread()` del paquete `data.table`. Esta función es más rápida y directamente reconoce el delimitador, aunque es recomendable curarse en salud e indicarlo. A grandes rasgos, los argumentos de `read.table()` también están presentes aquí, por lo que es muy fácil trabajar con esta función.
 
 **Ejemplo:** Importar el archivo anterior con la información básica de películas con `fread()`.
 
 ```{r lectura_fread}
 df <- fread(file = 'data/title_basics.tsv',
-            quote = '', # no tengo cualificadores
+            quote = '', # no tengo calificadores
             na.strings = 'null', # caracteres nulos
             encoding = 'UTF-8') # codificación
 ```
@@ -186,7 +186,7 @@ Sin embargo, hay un aspecto a tener en cuenta. Esta función por defecto importa
 
 ```{r lectura_fread_dataframe}
 df <- fread(file = 'data/title_basics.tsv',
-            quote = '', # no tengo cualificadores
+            quote = '', # no tengo calificadores
             na.strings = 'null', # caracteres nulos
             encoding = 'UTF-8', # codificación
             data.table = FALSE) # data.table o data.frame
@@ -429,12 +429,12 @@ Para este caso vamos a importar un nuevo dataset para cruzarlo con el ya present
 
 ```{r lectura_notas_readdelim}
 df_notas <- read.delim(file = 'data/title_ratings.tsv',
-                       quote = '', # no tengo cualificadores
+                       quote = '', # no tengo calificadores
                        na.strings = 'null', # caracteres nulos
                        encoding = 'UTF-8') # codificación
 
 df_akas <- read.delim(file = 'data/title_akas.tsv',
-                      quote = '', # no tengo cualificadores
+                      quote = '', # no tengo calificadores
                       na.strings = 'null', # caracteres nulos
                       encoding = 'UTF-8') # codificación
 ```
@@ -577,7 +577,7 @@ write.csv(df_filtrado, # data.frame a exportar
           row.names = FALSE) # omito los nombres/indices de filas
 ```
 
-Con `data.table` el proceso se realiza con la función `fwrite()` y es igual de sencillo. Por defecto utiliza el cualificador cuando detecta que es necesario, y usa de separador las comas.
+Con `data.table` el proceso se realiza con la función `fwrite()` y es igual de sencillo. Por defecto utiliza el calificador cuando detecta que es necesario, y usa de separador las comas.
 
 ```{r export_comma_fwrite}
 fwrite(df_filtrado, # data.frame a exportar

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Wenceslao Arroyo-Machado @Wences91" />
 
-<meta name="date" content="2022-10-21" />
+<meta name="date" content="2022-11-04" />
 
 <title>Introducción práctica a la ciencia de datos en R</title>
 
@@ -1608,7 +1608,7 @@ div.tocify {
 en R</h1>
 <h4 class="author">Wenceslao
 Arroyo-Machado<br><a href="https://twitter.com/Wences91" style="font-size: 14px"><span class="citation">@Wences91</span></b></h4>
-<h4 class="date">2022-10-21</h4>
+<h4 class="date">2022-11-04</h4>
 
 </div>
 
@@ -1616,9 +1616,9 @@ Arroyo-Machado<br><a href="https://twitter.com/Wences91" style="font-size: 14px"
 <p>Esta es una <a href="http://rmarkdown.rstudio.com">R Markdown</a>
 Notebook<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
 con todos los contenidos del curso <a href="https://yosigopublicando.ugr.es/courses/introduccion-practica-a-la-ciencia-de-datos-en-r/">Introducción
-práctica a la ciencia de datos en R</a>. El objetivo es introducir los
-procesos básicos de ciencia de datos para el procesamiento de datos
-(lectura, procesamiento y exportación).</p>
+práctica a la ciencia de datos en R</a> y su <a href="https://yosigopublicando.ugr.es/courses/introduccion-practica-a-la-ciencia-de-datos-en-r-redux/">repetición</a>.
+El objetivo es introducir los procesos básicos de ciencia de datos para
+el procesamiento de datos (lectura, procesamiento y exportación).</p>
 <div id="preparación" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Preparación</h1>
 <div id="paquetes" class="section level2" number="1.1">
@@ -1692,9 +1692,9 @@ fundamental saber:</p>
 <ul>
 <li><strong>Codificación</strong> - juego de caracteres, generalmente
 usarás UTF-8.</li>
-<li><strong>Delimitador</strong> - caracter de separación, lo normal es
+<li><strong>Delimitador</strong> - carácter de separación, lo normal es
 la coma (,), punto y coma (;) y tabulador (\t).</li>
-<li><strong>Calificador</strong> - caracter que evita que en cadenas de
+<li><strong>Calificador</strong> - carácter que evita que en cadenas de
 texto donde esta presente un caracter igual al delimitador no lo
 reconozca como tal, lo normal son las comillas dobles (“) o comillas
 simples (’).</li>
@@ -1715,7 +1715,7 @@ información básica de películas.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">file =</span> <span class="st">&#39;data/title_basics.tsv&#39;</span>,</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="co"># mi archivo tiene cabecera</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sep =</span> <span class="st">&#39;</span><span class="sc">\t</span><span class="st">&#39;</span>, <span class="co"># el delimitador es el tabulador</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">comment.char =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo comentarios</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>) <span class="co"># codificación</span></span></code></pre></div>
@@ -1850,7 +1850,7 @@ con comas por decimales.</li>
 <p><strong>Ejemplo:</strong> El archivo anterior se puede importar
 directamente con <code>read.delim()</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="at">file =</span> <span class="st">&#39;data/title_basics.tsv&#39;</span>,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>) <span class="co"># codificación</span></span></code></pre></div>
 <p>Como está enmascarando la función <code>read.table()</code> podemos
@@ -1863,7 +1863,7 @@ la variable y su tipo.</p>
 <p><strong>Ejemplo:</strong> Importar el archivo anterior pero con la
 columnas de años como texto en lugar de números.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="at">file =</span> <span class="st">&#39;data/title_basics.tsv&#39;</span>,</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>, <span class="co"># codificación</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colClasses =</span> <span class="fu">c</span>(<span class="st">&#39;startYear&#39;</span><span class="ot">=</span><span class="st">&#39;character&#39;</span>)) <span class="co"># forzamos que los años sean texto</span></span></code></pre></div>
@@ -1874,7 +1874,7 @@ activada por defecto.</p>
 <p><strong>Ejemplo:</strong> Importar el archivo anterior pero con las
 variables de texto como factores.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="at">file =</span> <span class="st">&#39;data/title_basics.tsv&#39;</span>,</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>, <span class="co"># codificación</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>) <span class="co"># texto como factores</span></span></code></pre></div>
@@ -1883,15 +1883,15 @@ variables de texto como factores.</p>
 <h2><span class="header-section-number">2.2</span> fread()</h2>
 <p>Existen funciones en otros paquetes que facilitan aún más este
 trabajo, como es el caso de <code>fread()</code> del paquete
-<code>dplyr</code>. Esta función es más rápida y directamente reconoce
-el delimitador, aunque es recomendable curarse en salud e indicarlo. A
-grandes rasgos, los argumentos de <code>read.table()</code> también
-están presentes aquí, por lo que es muy fácil trabajar con esta
+<code>data.table</code>. Esta función es más rápida y directamente
+reconoce el delimitador, aunque es recomendable curarse en salud e
+indicarlo. A grandes rasgos, los argumentos de <code>read.table()</code>
+también están presentes aquí, por lo que es muy fácil trabajar con esta
 función.</p>
 <p><strong>Ejemplo:</strong> Importar el archivo anterior con la
 información básica de películas con <code>fread()</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="at">file =</span> <span class="st">&#39;data/title_basics.tsv&#39;</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>) <span class="co"># codificación</span></span></code></pre></div>
 <p>Sin embargo, hay un aspecto a tener en cuenta. Esta función por
@@ -1901,7 +1901,7 @@ hacer que se importe como <em>data.frame</em> con el argumento
 <em>data.table</em>. En nuestro caso trabajaremos con
 <em>data.frame</em> por ser un curso introductorio.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="at">file =</span> <span class="st">&#39;data/title_basics.tsv&#39;</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>, <span class="co"># codificación</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">data.table =</span> <span class="cn">FALSE</span>) <span class="co"># data.table o data.frame</span></span></code></pre></div>
@@ -3758,12 +3758,12 @@ aparecen como nulos.</p></li>
 <p>Para este caso vamos a importar un nuevo dataset para cruzarlo con el
 ya presente. Vamos a importar los datos de votaciones.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df_notas <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="at">file =</span> <span class="st">&#39;data/title_ratings.tsv&#39;</span>,</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>) <span class="co"># codificación</span></span>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>df_akas <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="at">file =</span> <span class="st">&#39;data/title_akas.tsv&#39;</span>,</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo cualificadores</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">quote =</span> <span class="st">&#39;&#39;</span>, <span class="co"># no tengo calificadores</span></span>
 <span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">na.strings =</span> <span class="st">&#39;null&#39;</span>, <span class="co"># caracteres nulos</span></span>
 <span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">encoding =</span> <span class="st">&#39;UTF-8&#39;</span>) <span class="co"># codificación</span></span></code></pre></div>
 <p>En lugar de usar la opción base de R vamos a optar directamente por
@@ -4762,7 +4762,7 @@ caso práctico separado por comas.</p>
 <span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">row.names =</span> <span class="cn">FALSE</span>) <span class="co"># omito los nombres/indices de filas</span></span></code></pre></div>
 <p>Con <code>data.table</code> el proceso se realiza con la función
 <code>fwrite()</code> y es igual de sencillo. Por defecto utiliza el
-cualificador cuando detecta que es necesario, y usa de separador las
+calificador cuando detecta que es necesario, y usa de separador las
 comas.</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(df_filtrado, <span class="co"># data.frame a exportar</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>       <span class="st">&#39;results/archivo_exportado.csv&#39;</span>) <span class="co"># ruta y nombre de archivo</span></span></code></pre></div>
